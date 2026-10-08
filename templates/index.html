@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uber Fare Predictor | Task 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090a0f;
+            --card-bg: rgba(18, 20, 29, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #06c167;
+            --primary-glow: rgba(6, 193, 103, 0.35);
+            --accent: #276ef1;
+            --text-main: #f6f6f9;
+            --text-muted: #9496a1;
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(39, 110, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 193, 103, 0.12) 0px, transparent 50%);
+            min-height: 100vh;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(6, 193, 103, 0.1);
+            border: 1px solid rgba(6, 193, 103, 0.3);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 30%, #9496a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Test Presets */
+        .preset-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .preset-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .btn-preset:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-preset.danger-preset:hover {
+            background: var(--danger-bg);
+            border-color: var(--danger);
+            color: #fca5a5;
+        }
+
+        /* Alerts */
+        .alert-danger {
+            background: var(--danger-bg);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #fca5a5;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger ul {
+            list-style-type: none;
+            margin-top: 0.4rem;
+        }
+
+        .alert-danger li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .alert-danger li::before {
+            content: "•";
+            position: absolute;
+            left: 0.3rem;
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #d1d5db;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        label span.req {
+            color: var(--primary);
+        }
+
+        label span.opt {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .coords-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .coords-header {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--primary);
+            color: #000000;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(6, 193, 103, 0.5);
+            background: #09dc77;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <div class="badge">🚀 Machine Learning Model Served</div>
+            <h1>Uber Fare Prediction</h1>
+            <p>Trained ML Pipeline with Automated Preprocessing & Random Forest</p>
+        </div>
+
+        <!-- Quick-Fill Preset Buttons for Testing (Task 3 Spec) -->
+        <div class="preset-section">
+            <div class="preset-title">⚡ Quick Test Presets (Task 3 Test Cases)</div>
+            <div class="preset-buttons">
+                <button type="button" class="btn-preset" onclick="fillShort()">
+                    🚕 1. Short Daytime<br><small style="color:var(--text-muted)">2.5 km · Midtown</small>
+                </button>
+                <button type="button" class="btn-preset" onclick="fillAirport()">
+                    ✈️ 2. Airport (JFK)<br><small style="color:var(--text-muted)">18 km · Queens</small>
+                </button>
+                <button type="button" class="btn-preset" onclick="fillNight()">
+                    🌙 3. Weekend Night<br><small style="color:var(--text-muted)">6 km · Sat 23:30</small>
+                </button>
+                <button type="button" class="btn-preset danger-preset" onclick="fillInvalid()">
+                    ⚠️ 4. Invalid Input<br><small style="color:var(--text-muted)">Distance = -5</small>
+                </button>
+            </div>
+        </div>
+
+        {% if errors %}
+        <div class="alert-danger">
+            <strong>⚠️ Please check the following issues:</strong>
+            <ul>
+                {% for err in errors %}
+                <li>{{ err }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form action="/predict" method="POST" id="fareForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="distance">
+                        Trip Distance (km) <span class="req">*</span>
+                    </label>
+                    <input type="number" step="any" id="distance" name="distance" 
+                           placeholder="e.g. 5.2" 
+                           value="{{ form_data.distance if form_data else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pickup_datetime">
+                        Pickup Date & Time <span class="req">*</span>
+                    </label>
+                    <input type="datetime-local" id="pickup_datetime" name="pickup_datetime" 
+                           value="{{ form_data.pickup_datetime if form_data else '' }}" required>
+                </div>
+            </div>
+
+            <div class="coords-box">
+                <div class="coords-header">
+                    <span>📍 GPS Coordinates (NYC Area)</span>
+                    <span class="opt">Optional — Improves airport proximity features</span>
+                </div>
+                <div class="form-grid" style="margin-bottom:0;">
+                    <div class="form-group">
+                        <label for="pickup_latitude">Pickup Latitude</label>
+                        <input type="number" step="any" id="pickup_latitude" name="pickup_latitude" 
+                               placeholder="e.g. 40.7580" 
+                               value="{{ form_data.pickup_latitude if form_data else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="pickup_longitude">Pickup Longitude</label>
+                        <input type="number" step="any" id="pickup_longitude" name="pickup_longitude" 
+                               placeholder="e.g. -73.9855" 
+                               value="{{ form_data.pickup_longitude if form_data else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dropoff_latitude">Dropoff Latitude</label>
+                        <input type="number" step="any" id="dropoff_latitude" name="dropoff_latitude" 
+                               placeholder="e.g. 40.7829" 
+                               value="{{ form_data.dropoff_latitude if form_data else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dropoff_longitude">Dropoff Longitude</label>
+                        <input type="number" step="any" id="dropoff_longitude" name="dropoff_longitude" 
+                               placeholder="e.g. -73.9654" 
+                               value="{{ form_data.dropoff_longitude if form_data else '' }}">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span>Predict Trip Fare</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </button>
+        </form>
+
+        <div class="footer">
+            Task 3 Deployment · Integrated Preprocessing & Random Forest Regressor Pipeline
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper to format ISO datetime for input[type=datetime-local]
+    function getFormattedDate(year, month, day, hour, minute) {
+        const d = new Date(year, month - 1, day, hour, minute);
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // Set default datetime to now if empty
+    window.onload = function() {
+        const dtInput = document.getElementById('pickup_datetime');
+        if (!dtInput.value) {
+            const now = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            dtInput.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        }
+    };
+
+    // Preset 1: Short daytime trip (Midtown)
+    function fillShort() {
+        document.getElementById('distance').value = "2.5";
+        document.getElementById('pickup_datetime').value = getFormattedDate(2025, 5, 14, 10, 15);
+        document.getElementById('pickup_latitude').value = "40.7580";
+        document.getElementById('pickup_longitude').value = "-73.9855";
+        document.getElementById('dropoff_latitude').value = "40.7650";
+        document.getElementById('dropoff_longitude').value = "-73.9780";
+    }
+
+    // Preset 2: Airport trip (JFK)
+    function fillAirport() {
+        document.getElementById('distance').value = "18.0";
+        document.getElementById('pickup_datetime').value = getFormattedDate(2025, 5, 15, 14, 30);
+        document.getElementById('pickup_latitude').value = "40.6413";
+        document.getElementById('pickup_longitude').value = "-73.7781";
+        document.getElementById('dropoff_latitude').value = "40.7505";
+        document.getElementById('dropoff_longitude').value = "-73.9934";
+    }
+
+    // Preset 3: Late-night weekend trip (Saturday 23:30)
+    function fillNight() {
+        document.getElementById('distance').value = "6.0";
+        document.getElementById('pickup_datetime').value = getFormattedDate(2025, 5, 17, 23, 30);
+        document.getElementById('pickup_latitude').value = "40.7282";
+        document.getElementById('pickup_longitude').value = "-73.9942";
+        document.getElementById('dropoff_latitude').value = "40.7812";
+        document.getElementById('dropoff_longitude').value = "-73.9665";
+    }
+
+    // Preset 4: Invalid Case (Negative distance)
+    function fillInvalid() {
+        document.getElementById('distance').value = "-5.0";
+        document.getElementById('pickup_datetime').value = getFormattedDate(2025, 5, 14, 12, 0);
+        document.getElementById('pickup_latitude').value = "";
+        document.getElementById('pickup_longitude').value = "";
+        document.getElementById('dropoff_latitude').value = "";
+        document.getElementById('dropoff_longitude').value = "";
+    }
+</script>
+
+</body>
+</html>

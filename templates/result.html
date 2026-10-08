@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result | Uber Fare Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090a0f;
+            --card-bg: rgba(18, 20, 29, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #06c167;
+            --primary-glow: rgba(6, 193, 103, 0.4);
+            --text-main: #f6f6f9;
+            --text-muted: #9496a1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(39, 110, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 193, 103, 0.12) 0px, transparent 50%);
+            min-height: 100vh;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .success-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(6, 193, 103, 0.1);
+            border: 1px solid rgba(6, 193, 103, 0.3);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .fare-amount {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.04em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        .fare-symbol {
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .details-grid {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-active {
+            background: rgba(6, 193, 103, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(6, 193, 103, 0.3);
+        }
+
+        .tag-inactive {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 1.1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="success-badge">✓ Prediction Complete</div>
+        <h2>Estimated Uber Fare</h2>
+        
+        <div class="fare-amount">
+            <span class="fare-symbol">$</span>{{ "%.2f"|format(prediction) }}
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="detail-label">Trip Distance</span>
+                <span class="detail-value">{{ form_data.distance }} km</span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Pickup Time</span>
+                <span class="detail-value">{{ "%02d"|format(form_data.hour) }}:00 ({{ form_data.year }}-{{ "%02d"|format(form_data.month) }}-{{ "%02d"|format(form_data.day) }})</span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Night Trip</span>
+                <span class="detail-value">
+                    {% if form_data.is_night %}
+                        <span class="tag tag-active">🌙 Yes (Late Night)</span>
+                    {% else %}
+                        <span class="tag tag-inactive">☀️ No (Daytime)</span>
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Weekend Trip</span>
+                <span class="detail-value">
+                    {% if form_data.is_weekend %}
+                        <span class="tag tag-active">🎉 Yes (Weekend)</span>
+                    {% else %}
+                        <span class="tag tag-inactive">💼 No (Weekday)</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <a href="/" class="btn-back">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Predict Another Trip</span>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
